@@ -1,14 +1,24 @@
 from tkinter import *
+from tkinter import messagebox
 # ---------------------------- Save Password ------------------------------- #
 def save():
     website = website_entry.get()
     email = email_entry.get()
     password = password_entry.get()
 
-    with open("data.txt", "a") as data_file:
-        data_file.write(f"{website} | {email} | {password}\n")
 
-    reset()
+    if len(website) == 0 or len(website) > 50 or len(password) == 0 or len(password) > 50:
+        messagebox.showinfo(title="Password Manager", message="Please don't leave any fields empty!")
+        return
+
+    is_ok = messagebox.askokcancel(title="Password Manager",
+                           message=f"These are the details entered: "
+                                   f"\nWebsite: {website}\nEmail: {email}\nPassword: {password}\nIs it ok to save?")
+    if is_ok:
+        with open("data.txt", "a") as data_file:
+            data_file.write(f"{website} | {email} | {password}\n")
+        reset()
+        messagebox.showinfo(title="Password Manager", message="Password saved!")
 
 def reset():
     website_entry.delete(0, END)
