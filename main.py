@@ -4,7 +4,15 @@ from random import choice, shuffle, randint
 import pyperclip
 # ----------------------------Password Generator-----------------------------#
 def clear_clipboard():
-    pyperclip.copy("")
+    try:
+        # Windows clipboards sometimes ignore a totally empty string.
+        # Overwriting with a single space forces the active clipboard to clear.
+        pyperclip.copy("🔒 Copied password removed from clipboard after 30 seconds")
+    except Exception as e:
+        # Since you are in --windowed mode, if it fails,
+        # this writes the error to a local debug file so you can see it!
+        with open("error_log.txt", "a") as log:
+            log.write(f"Clipboard error: {e}\n")
 
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -31,14 +39,32 @@ def generate_password():
 
 # ---------------------------- Save Password ------------------------------- #
 def save():
-    website = website_entry.get()
-    email = email_entry.get()
-    password = password_entry.get()
+    # Map field names to their current values
+    fields = {
+        "Website": website_entry.get(),
+        "Email/Username": email_entry.get(),
+        "Password": password_entry.get()
+    }
 
+    # Loop through each field to validate dynamically
+    for field_name, value in fields.items():
+        if len(value) == 0:
+            messagebox.showinfo(title="Validation Error", message=f"The {field_name} field cannot be empty.")
+            return
 
-    if len(website) == 0 or len(website) > 50 or len(password) == 0 or len(password) > 50:
-        messagebox.showinfo(title="Password Manager", message="Please don't leave any fields empty!")
-        return
+        if len(value) > 50:
+            if field_name == "Password":
+                messagebox.showinfo(title="Validation Error",
+                                    message=f"The Password field is over 50 characters!\n\n(Did you accidentally paste the clipboard warning?)")
+            else:
+                messagebox.showinfo(title="Validation Error",
+                                    message=f"The {field_name} input is too long (over 50 characters).")
+            return
+
+    # If all checks pass, proceed with confirmation and saving
+    website = fields["Website"]
+    email = fields["Email/Username"]
+    password = fields["Password"]
 
     is_ok = messagebox.askokcancel(title="Password Manager",
                            message=f"These are the details entered: "
