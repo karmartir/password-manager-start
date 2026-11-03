@@ -1,7 +1,23 @@
+import sys
+import os
 from tkinter import *
 from tkinter import messagebox
 from random import choice, shuffle, randint
 import pyperclip
+
+
+# Helper function to find resource paths whether running as script or compiled .exe
+relative_path = ""
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 # ----------------------------Password Generator-----------------------------#
 def clear_clipboard():
     try:
@@ -92,7 +108,7 @@ window.columnconfigure(2, weight=0)
 
 # FIXED: Removed columnspan=2 so the logo stays centered on column 1
 canvas = Canvas(width=200, height=200, highlightthickness=0)
-logo_img = PhotoImage(file="logo.png")
+logo_img = PhotoImage(file=resource_path("logo.png"))
 canvas.create_image(100, 100, image=logo_img)
 canvas.grid(column=1, row=0)
 
