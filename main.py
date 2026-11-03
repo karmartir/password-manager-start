@@ -1,9 +1,24 @@
 from tkinter import *
+# ---------------------------- Save Password ------------------------------- #
+def save():
+    website = website_entry.get()
+    email = email_entry.get()
+    password = password_entry.get()
+
+    with open("data.txt", "a") as data_file:
+        data_file.write(f"{website} | {email} | {password}\n")
+
+    reset()
+
+def reset():
+    website_entry.delete(0, END)
+    password_entry.delete(0, END)
+    website_entry.focus()
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
-window.config(padx=70, pady=70)
+window.config(padx=50, pady=50)
 
 # Lock column proportions so Windows/Linux don't stretch column 2 randomly
 window.columnconfigure(0, weight=0)
@@ -43,7 +58,7 @@ generate_password_button = Button(text="Generate Password")
 generate_password_button.grid(column=2, row=3, sticky="w", padx=(5, 0), pady=5)
 
 # Row 4: Add button spans columns 1 and 2 cleanly
-add_button = Button(text="Add")
+add_button = Button(text="Add", command=save)
 add_button.grid(column=1, row=4, columnspan=2, sticky="ew", pady=5)
 
 window.mainloop()
