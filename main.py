@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, shuffle, randint
 import pyperclip
+import json
 
 
 # Helper function to find resource paths whether running as script or compiled .exe
@@ -81,13 +82,29 @@ def save():
     website = fields["Website"]
     email = fields["Email/Username"]
     password = fields["Password"]
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
+##-----##
     is_ok = messagebox.askokcancel(title="Password Manager",
                            message=f"These are the details entered: "
                                    f"\nWebsite: {website}\nEmail: {email}\nPassword: {password}\nIs it ok to save?")
     if is_ok:
-        with open("data.txt", "a") as data_file:
-            data_file.write(f"{website} | {email} | {password}\n")
+        with open("data.json", "r") as data_file:
+            #Reading old data
+            data = json.load(data_file)
+            #Updating old data with new data in computer memory NOT the file!!!
+            data.update(new_data)
+
+            #Writing updated data to file
+        with open("data.json", "w") as data_file:
+            json.dump(data, data_file, indent=4)
+
+
         reset()
         messagebox.showinfo(title="Password Manager", message="Password saved!")
 
