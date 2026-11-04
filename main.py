@@ -63,6 +63,20 @@ def save():
         "Password": password_entry.get()
     }
 
+    def load_data():
+        """Helper to load existing data, or return an empty dict if the file doesn't exist yet."""
+        try:
+            with open("data.json", "r") as data_file:
+                return json.load(data_file)
+        except FileNotFoundError:
+            return {}
+
+    def json_dump(u_data):
+        """Helper to write data back to the file."""
+        with open("data.json", "w") as f_data_file:
+            json.dump(u_data, f_data_file, indent=4)
+
+
     # Loop through each field to validate dynamically
     for field_name, value in fields.items():
         if len(value) == 0:
@@ -94,19 +108,12 @@ def save():
                            message=f"These are the details entered: "
                                    f"\nWebsite: {website}\nEmail: {email}\nPassword: {password}\nIs it ok to save?")
     if is_ok:
-        with open("data.json", "r") as data_file:
-            #Reading old data
-            data = json.load(data_file)
-            #Updating old data with new data in computer memory NOT the file!!!
-            data.update(new_data)
+       data = load_data()
+       data.update(new_data)
+       json_dump(data)
 
-            #Writing updated data to file
-        with open("data.json", "w") as data_file:
-            json.dump(data, data_file, indent=4)
-
-
-        reset()
-        messagebox.showinfo(title="Password Manager", message="Password saved!")
+    reset()
+    messagebox.showinfo(title="Password Manager", message="Password saved!")
 
 def reset():
     website_entry.delete(0, END)
